@@ -24,23 +24,29 @@ function AccountContainer() {
       body: JSON.stringify(newTransaction)
     })
     .then(r=>r.json())
-    .then(data=>setTransactions([...transactions,data]))
+    .then(data=>setTransactions(prev => [...prev,data]))
   }
   
   // Sort function here
   function onSort(sortBy){
-    
+    const sorted = [...transactions].sort((a, b) => {
+      const A = a[sortBy].toString().toLowerCase()
+      const B = b[sortBy].toString().toLowerCase()
+      return A.localeCompare(B)
+    });
+    setTransactions(sorted);
   }
 
-  // Filter using search here and pass new variable down
-  
+  const filteredTransactions = transactions.filter(txn =>
+    txn.description.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div>
       <Search setSearch={setSearch}/>
       <AddTransactionForm postTransaction={postTransaction}/>
       <Sort onSort={onSort}/>
-      <TransactionsList transactions={transactions} />
+      <TransactionsList transactions={filteredTransactions} />
     </div>
   );
 }
